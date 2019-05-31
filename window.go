@@ -4,11 +4,10 @@ import (
 	_ "image"
 	_ "image/png"
 	_ "os"
-	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"golang.org/x/image/colornames"
+	_ "golang.org/x/image/colornames"
 )
 
 func main() {
@@ -18,33 +17,25 @@ func main() {
 func run() {
 	win := loadWindow()
 
-	center := win.Bounds().Center()
-
-	win.Clear(colornames.Firebrick)
-
 	sprite := getSprite()
 
-	angle := 0.0
-	last := time.Now()
-	for !win.Closed() {
-		dt := time.Since(last).Seconds()
-		last = time.Now()
-		win.Clear(colornames.Firebrick)
+	animateSpinningSprite(win, sprite)
 
-		mat := pixel.IM
-		mat = mat.ScaledXY(pixel.ZV, pixel.V(5, 5))
-		mat = mat.Rotated(pixel.ZV, angle)
-		angle += 3 * dt
-		mat = mat.Moved(center)
-		sprite.Draw(win, mat)
+	//spriteSheet := getSpriteSheet()
 
+	//tree := pixel.NewSprite(spriteSheet, pixel.R(0, 0, 32, 32))
+
+	/*for !win.Closed() {
+		win.Clear(colornames.Whitesmoke)
+		tree.Draw(win, pixel.IM.Scaled(pixel.ZV, 16).Moved(win.Bounds().Center()))
 		win.Update()
 	}
+	*/
 }
 
 func loadWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
-		Title:  "Pixel Rocks!",
+		Title:  "Woot!",
 		Bounds: pixel.R(0, 0, 1024, 768),
 		VSync:  true,
 	}
@@ -52,16 +43,13 @@ func loadWindow() *pixelgl.Window {
 	if err != nil {
 		panic(err)
 	}
-	win.SetSmooth(true)
 	return win
 }
 
-func getSprite() *pixel.Sprite {
-	img, err := LoadPicture("crying.png")
+func getSpriteSheet() pixel.Picture {
+	img, err := LoadPicture("trees.png")
 	if err != nil {
 		panic(err)
 	}
-
-	sprite := pixel.NewSprite(img, img.Bounds())
-	return sprite
+	return img
 }
