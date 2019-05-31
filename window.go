@@ -1,8 +1,11 @@
 package main
 
 import (
+	_ "image"
+	_ "image/png"
+	_ "os"
+
 	"github.com/faiface/pixel"
-	_ "github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
 )
@@ -21,9 +24,14 @@ func run() {
 	if err != nil {
 		panic(err)
 	}
-	win.Clear(colornames.Skyblue)
+	img, err := LoadPicture("crying.png")
+	if err != nil {
+		panic(err)
+	}
+	sprite := pixel.NewSprite(img, img.Bounds())
+	win.Clear(colornames.Silver)
+	sprite.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
 	for !win.Closed() {
 		win.Update()
-		win.Clear(colornames.Silver)
 	}
 }
