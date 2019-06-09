@@ -7,7 +7,7 @@ import (
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	_ "golang.org/x/image/colornames"
+	"golang.org/x/image/colornames"
 )
 
 func main() {
@@ -17,20 +17,28 @@ func main() {
 func run() {
 	win := loadWindow()
 
-	sprite := getSprite()
+	spriteSheet := getSpriteSheet()
 
-	animateSpinningSprite(win, sprite)
+	treeFrames := getTreeFrames(spriteSheet)
 
-	//spriteSheet := getSpriteSheet()
+	tree := pixel.NewSprite(spriteSheet, treeFrames[0])
 
-	//tree := pixel.NewSprite(spriteSheet, pixel.R(0, 0, 32, 32))
-
-	/*for !win.Closed() {
+	for !win.Closed() {
 		win.Clear(colornames.Whitesmoke)
 		tree.Draw(win, pixel.IM.Scaled(pixel.ZV, 16).Moved(win.Bounds().Center()))
 		win.Update()
 	}
-	*/
+
+}
+
+func getTreeFrames(spriteSheet pixel.Picture) []pixel.Rect {
+	treeFrames := []pixel.Rect{}
+	for x := spriteSheet.Bounds().Min.X; x < spriteSheet.Bounds().Max.X; x += 32 {
+		for y := spriteSheet.Bounds().Min.Y; y < spriteSheet.Bounds().Max.Y; y += 32 {
+			treeFrames = append(treeFrames, pixel.R(x, y, x+32, y+32))
+		}
+	}
+	return treeFrames
 }
 
 func loadWindow() *pixelgl.Window {
