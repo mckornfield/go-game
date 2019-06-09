@@ -3,6 +3,7 @@ package main
 import (
 	_ "image"
 	_ "image/png"
+	"math/rand"
 	_ "os"
 
 	"github.com/faiface/pixel"
@@ -21,14 +22,37 @@ func run() {
 
 	treeFrames := getTreeFrames(spriteSheet)
 
-	tree := pixel.NewSprite(spriteSheet, treeFrames[0])
-
+	var (
+		trees    []*pixel.Sprite
+		matrices []pixel.Matrix
+	)
 	for !win.Closed() {
+		if win.JustPressed(pixelgl.MouseButtonLeft) {
+			tree := getNewTree(treeFrames, spriteSheet)
+			trees, matrices = addPlantedTree(trees, matrices, tree, win)
+		}
+
 		win.Clear(colornames.Whitesmoke)
-		tree.Draw(win, pixel.IM.Scaled(pixel.ZV, 16).Moved(win.Bounds().Center()))
+		for i, tree := range trees {
+			tree.Draw(win, matrices[i])
+		}
+
 		win.Update()
 	}
 
+}
+
+func addPlantedTree(trees []*pixel.Sprite, matrices []pixel.Matrix, tree *pixel.Sprite, win *pixelgl.Window) ([]*pixel.Sprite, []pixel.Matrix) {
+	trees = append(trees, tree)
+	matrix := pixel.IM.Scaled(pixel.ZV, 4).Moved(win.MousePosition())
+	matrices = append(matrices, matrix)
+	return trees, matrices
+}
+
+func getNewTree(treeFrames []pixel.Rect, spriteSheet pixel.Picture) *pixel.Sprite {
+	treeIndex := rand.Intn(len(treeFrames))
+	tree := pixel.NewSprite(spriteSheet, treeFrames[treeIndex])
+	return tree
 }
 
 func getTreeFrames(spriteSheet pixel.Picture) []pixel.Rect {
